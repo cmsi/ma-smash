@@ -1,0 +1,85 @@
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ F90 = mpif90
+-LIB = -mkl=parallel
+-OPT = -openmp -i8 -xHOST
++LIB = -llapack -lblas
++OPT = -O3 -fopenmp
+ SRC =   basis.F90 geom.F90 guess.F90 fileio.F90 int1.F90 machine.F90 main.F90 math.F90 \
+ 	memory.F90 scf.F90 scflib.F90 int2.F90 int2sp.F90 int2spd1.F90 \
+ 	int2spd2.F90 int2spd3.F90 int2spd4.F90 gradient.F90 rysquad.F90 int2rys.F90  \
+@@ -11,16 +11,30 @@
+ OBJM= $(addprefix obj/,$(MOD:.F90=.o))
+ OBJS= $(OBJM) $(OBJ)
+ OBJDIR= obj
++PREFIX=$(DESTDIR)/usr
+ .SUFFIXES:
+ .SUFFIXES: .F .F90 .o
+ 
+ smash : $(OBJS)
+-	$(F90) -o bin/smash -I $(OBJDIR) $(OPT) $(OBJS) $(LIB)
++	$(F90) -o bin/smash -J$(OBJDIR) $(OPT) $(OBJS) $(LIB)
+ 
+ $(OBJDIR)/%.o : src/%.F90
+-	$(F90) $(OPT) -module $(OBJDIR) -o $@ -c $<
++	$(F90) $(OPT) -J$(OBJDIR) -o $@ -c $<
+ 
+ $(OBJ): $(addprefix src/,$(MOD))
+ 
++vtk-generator:
++	(cd vtk && make)
++
++install: smash vtk-generator
++	mkdir -p $(PREFIX)/bin $(PREFIX)/share/smash/vtk
++	cp bin/smash $(PREFIX)/bin
++	cp vtk/vtk-generator $(PREFIX)/bin/smash-vtk-generator
++	cp vtk/mo-view.pvsm vtk/vtk-generator_manual $(PREFIX)/share/smash/vtk
++	cp -rp example $(PREFIX)/share/smash
++	chmod 755 $(PREFIX)/bin/smash $(PREFIX)/bin/smash-vtk-generator
++	chmod 644 $(PREFIX)/share/smash/example/*
++	chmod 644 $(PREFIX)/share/smash/vtk/*
++
+ clean :
+-	rm -f $(OBJDIR)/*.mod $(OBJDIR)/*.o bin/smash
++	rm -f $(OBJDIR)/*.mod $(OBJDIR)/*.o bin/smash vtk/vtk-generator vtk/*.o vtk/*.mod
+--- a/vtk/Makefile
++++ b/vtk/Makefile
+@@ -1,5 +1,5 @@
+-F90 = ifort
+-OPT = -openmp -i8 -xHOST
++F90 = gfortran
++OPT = -O3 -fopenmp
+ 
+ smash : vtk-generator.F90
+ 	$(F90) -o vtk-generator $(OPT) vtk-generator.F90
+--- /dev/null
++++ b/example/anthracene.inp
+@@ -0,0 +1,27 @@
++job runtype=energy method=b3lyp basis=6-31G
++control check=anthracene.chk
++geom
++C     0.000000    0.000000    1.405719
++C     0.000000    1.222957    0.721398
++C     0.000000   -1.222957    0.721398
++C     0.000000    1.222957   -0.721398
++C     0.000000   -1.222957   -0.721398
++C     0.000000    0.000000   -1.405719
++C     0.000000    2.473347    1.407594
++C     0.000000    3.658216    0.711102
++C     0.000000    3.658216   -0.711102
++C     0.000000    2.473347   -1.407594
++C     0.000000   -2.473347    1.407594
++C     0.000000   -3.658216    0.711102
++C     0.000000   -3.658216   -0.711102
++C     0.000000   -2.473347   -1.407594
++H     0.000000    0.000000    2.496860
++H     0.000000    0.000000   -2.496860
++H     0.000000    2.472553    2.496880
++H     0.000000    2.472553   -2.496880
++H     0.000000   -2.472553    2.496880
++H     0.000000   -2.472553   -2.496880
++H     0.000000    4.604568    1.247237
++H     0.000000   -4.604568    1.247237
++H     0.000000    4.604568   -1.247237
++H     0.000000   -4.604568   -1.247237
