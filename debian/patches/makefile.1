@@ -1,15 +1,6 @@
 --- a/Makefile
 +++ b/Makefile
-@@ -1,6 +1,6 @@
- F90 = mpif90
--LIB = -mkl=parallel
--OPT = -openmp -i8 -xHOST
-+LIB = -llapack -lblas
-+OPT = -O3 -fopenmp
- SRC =   basis.F90 geom.F90 guess.F90 fileio.F90 int1.F90 machine.F90 main.F90 math.F90 \
- 	memory.F90 scf.F90 scflib.F90 int2.F90 int2elec.F90 int2sp.F90 int2spd1.F90 \
- 	int2spd2.F90 int2spd3.F90 int2spd4.F90 gradient.F90 rysquad.F90 \
-@@ -11,16 +11,30 @@
+@@ -11,6 +11,7 @@
  OBJM= $(addprefix obj/,$(MOD:.F90=.o))
  OBJS= $(OBJM) $(OBJ)
  OBJDIR= obj
@@ -17,42 +8,31 @@
  .SUFFIXES:
  .SUFFIXES: .F .F90 .o
  
- smash : $(OBJS)
--	$(F90) -o bin/smash -I $(OBJDIR) $(OPT) $(OBJS) $(LIB)
-+	$(F90) -o bin/smash -J$(OBJDIR) $(OPT) $(OBJS) $(LIB)
- 
- $(OBJDIR)/%.o : src/%.F90
--	$(F90) $(OPT) -module $(OBJDIR) -o $@ -c $<
-+	$(F90) $(OPT) -J$(OBJDIR) -o $@ -c $<
+@@ -22,5 +23,22 @@
  
  $(OBJ): $(addprefix src/,$(MOD))
  
-+vtk-generator:
-+	(cd vtk && make)
-+
-+install: smash vtk-generator
-+	mkdir -p $(PREFIX)/bin $(PREFIX)/share/smash/vtk
-+	cp bin/smash $(PREFIX)/bin
-+	cp vtk/vtk-generator $(PREFIX)/bin/smash-vtk-generator
-+	cp vtk/mo-view.pvsm vtk/vtk-generator_manual $(PREFIX)/share/smash/vtk
-+	cp -rp example $(PREFIX)/share/smash
-+	chmod 755 $(PREFIX)/bin/smash $(PREFIX)/bin/smash-vtk-generator
-+	chmod 644 $(PREFIX)/share/smash/example/*
-+	chmod 644 $(PREFIX)/share/smash/vtk/*
-+
- clean :
+-clean :
 -	rm -f $(OBJDIR)/*.mod $(OBJDIR)/*.o bin/smash
-+	rm -f $(OBJDIR)/*.mod $(OBJDIR)/*.o bin/smash vtk/vtk-generator vtk/*.o vtk/*.mod
---- a/vtk/Makefile
-+++ b/vtk/Makefile
-@@ -1,5 +1,5 @@
--F90 = ifort
--OPT = -openmp -i8 -xHOST
-+F90 = gfortran
-+OPT = -O3 -fopenmp
- 
- smash : vtk-generator.F90
- 	$(F90) -o vtk-generator $(OPT) vtk-generator.F90
++cube-generator:
++	(cd visual && make cube-generator)
++
++vtk-generator:
++	(cd visual && make vtk-generator)
++
++install: smash cube-generator vtk-generator
++	mkdir -p $(PREFIX)/bin $(PREFIX)/share/smash/visual
++	cp bin/smash $(PREFIX)/bin
++	cp visual/cube-generator $(PREFIX)/bin/smash-cube-generator
++	cp visual/vtk-generator $(PREFIX)/bin/smash-vtk-generator
++	cp visual/mo-view.pvsm visual/cube-generator_manual visual/vtk-generator_manual $(PREFIX)/share/smash/visual
++	cp -rp example $(PREFIX)/share/smash
++	chmod 755 $(PREFIX)/bin/smash $(PREFIX)/bin/smash-cube-generator $(PREFIX)/bin/smash-vtk-generator
++	chmod 644 $(PREFIX)/share/smash/example/*
++	chmod 644 $(PREFIX)/share/smash/visual/*
++
++clean distclean:
++	rm -f $(OBJDIR)/*.mod $(OBJDIR)/*.o bin/smash visual/cube-generator visual/vtk-generator visual/*.o visual/*.mod
 --- /dev/null
 +++ b/example/anthracene.inp
 @@ -0,0 +1,27 @@
