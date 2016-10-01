@@ -1,8 +1,8 @@
-smash (2.1.0-1) UNRELEASED; urgency=low
+smash (2.1.0-1) unstable; urgency=low
 
   * New upstream release 2.1.0
 
- -- Synge Todo <wistaria@phys.s.u-tokyo.ac.jp>  Sat, 01 Oct 2016 09:51:19 +0900
+ -- Synge Todo <wistaria@phys.s.u-tokyo.ac.jp>  Sat, 01 Oct 2016 10:50:47 +0900
 
 smash (2.0.0-1) unstable; urgency=low
 

@@ -9,7 +9,7 @@
 
 2. 以降
 
-   共通手順を参照 https://github.com/cmsi/MateriAppsLive/wiki/BuildApplicationPackages/_editihttps://github.com/cmsi/MateriAppsLive/wiki/BuildApplicationPackages#build
+   共通手順を参照 https://github.com/cmsi/MateriAppsLive/wiki/BuildApplicationPackages#パッケージのビルド方法
 
 ## How to test
 
