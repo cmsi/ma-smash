@@ -29,4 +29,3 @@ mv smash $BUILD_DIR
 tar zcf smash_$VERSION_BASE.orig.tar.gz $BUILD_DIR
 cp -frp $SCRIPT_DIR/debian $BUILD_DIR
 cd $BUILD_DIR
-dch --release "" --distribution $(lsb_release -s -c) --force-distribution

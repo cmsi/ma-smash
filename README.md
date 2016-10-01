@@ -5,24 +5,13 @@
 1. ソースファイルの準備 (ホスト上で)
 
         cd $HOME/vagrant/data/src
-        wget https://sourceforge.net/projects/smash-qc/files/smash-2.0.0.tgz
+        wget https://sourceforge.net/projects/smash-qc/files/smash-2.1.0.tgz
 
-2. ビルドディレクトリの準備
+2. 以降
 
-        cd $HOME/build
-        sh /development/ma-smash/setup.sh
+   共通手順を参照 https://github.com/cmsi/MateriAppsLive/wiki/BuildApplicationPackages/_editihttps://github.com/cmsi/MateriAppsLive/wiki/BuildApplicationPackages#build
 
-3. パッケージのビルド
+## How to test
 
-        cd $HOME/build
-        sh /development/ma-smash/build.sh 2>&1 | tee build.log
-
-4. パッケージへの署名
-
-        cd $HOME/build
-        debsign smash_*.changes 
-
-5. リポジトリへの登録
-
-        cd $HOME/build
-        sh /development/MateriAppsLive/repos/add_repo.sh smash_*.changes
+    cd $HOME/build/smash_2.1.0
+    ./bin/smash < debian/smash/usr/share/smash/example/anthracene.inp
